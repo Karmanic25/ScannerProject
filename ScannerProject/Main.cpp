@@ -52,7 +52,7 @@ enum TokenCode {
 int main() {
     /*
     //replace the string with the file path of whatever C file to test for comment blocks.
-    string cProjectFile = "C:\\Users\\Jacob\\Desktop\\Programming Concepts\\HW\\testingcode.c";
+    string cProjectFile = "C:\\Users\\username\\Desktop\\Programming Concepts\\HW\\testingcode.c";
     ifstream file(cProjectFile);
     FileScan(cProjectFile);
     */
@@ -61,7 +61,7 @@ int main() {
 }
 
 void addChar() {
-
+    //peepeepoopoo
 }
 
 void getChar() {
