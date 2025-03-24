@@ -12,6 +12,7 @@ char nextChar;
 int lexLen;
 int token;
 int nextToken;
+ifstream inputFile;
 
 //Function declarations
 void addChar();
@@ -50,24 +51,67 @@ enum TokenCode {
 };
 
 int main() {
-    /*
+    
     //replace the string with the file path of whatever C file to test for comment blocks.
-    string cProjectFile = "C:\\Users\\username\\Desktop\\Programming Concepts\\HW\\testingcode.c";
-    ifstream file(cProjectFile);
-    FileScan(cProjectFile);
-    */
+    inputFile.open("C:\\Users\\jacob\\Desktop\\ScannerProject\\test.txt");
+    if (!inputFile.is_open()) {
+		cerr << "Error opening file" << endl;
+		return 1;
+	}
+    
     return 0;
 
 }
 
 void addChar() {
-    //peepeepoopoo
+    //Check if lexeme is within bounds
+    if (lexLen <= 98) {
+		lexeme[lexLen++] = nextChar;
+		lexeme[lexLen] = 0;
+	} else {
+		cout << "Error - lexeme is too long \n";
+	}
 }
 
 void getChar() {
-
+    //Get the next character from the input file
+    if(inputFile.get(nextChar)) {
+        if (isalpha(nextChar) || nextChar == '_')  {
+			charClass = LETTER;
+		} else if (isdigit(nextChar)) {
+			charClass = DIGIT;
+		} else {
+			charClass = UNKNOWN;
+		}
+        } else { 
+			charClass = EOF;
+		}
 }
 
 void getNonBlank() {
+    while (isspace(nextChar)) {
+        getChar();
+    }
+}
+
+int lex() {
+    lexLen = 0;
+    getNonBlank();
+
+    //Starts cases for identifiers
+    switch (charClass) {
+    //parses Identifiers
+    case LETTER:
+        addChar();
+        getChar();
+        while (charClass == LETTER || charClass == DIGIT)
+        {
+            addChar();
+            getChar();
+        }
+        nextToken = ID;
+        break;
+
+    }
 
 }
