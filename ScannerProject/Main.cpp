@@ -61,14 +61,15 @@ enum TokenCode {
     LOWER = 31,
     NOTEQ = 32,
     COLON = 33,
-    SEMICOLON = 34
+    SEMICOLON = 34,
+    EQUALS = 35
 
 };
 
 int main() {
     
     //replace the string with the file path of whatever C file to test for comment blocks.
-    inputFile.open("input1.txt");
+    inputFile.open("input7.txt");
     if (!inputFile.is_open()) {
 		cerr << "Error opening file" << endl;
 		return 1;
@@ -116,11 +117,38 @@ int lookup(char ch) {
         break;
     case ':':
         addChar();
-        nextToken = COLON;
+        getChar();
+        if (nextChar == '=') {
+            addChar();
+            nextToken = ASSIGN;
+            getChar();
+        }else {
+            nextToken = COLON;
+        }
         break;
     case ';':
         addChar();
         nextToken = SEMICOLON;
+        break;
+    case '=':
+        addChar();
+        nextToken = EQUALS;
+        break;
+    case '<':
+        addChar();
+        getChar();
+        if (nextChar == '>') {
+            addChar();
+            nextToken = NOTEQ;
+            getChar();
+        }
+        else {
+            nextToken = GREATER;
+        }
+        break;
+    case '>':
+        addChar();
+        nextToken = LOWER;
         break;
     default:
         addChar();
