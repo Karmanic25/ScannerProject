@@ -48,6 +48,13 @@ enum TokenCode {
     COMP = 20,
     TYPE = 21,
     FUNCALL = 22
+    LPAREN = 23
+    RPAREN = 24
+    ADD_OP = 25
+    SUB_OP = 26
+    MULT_OP = 27
+    DIV_OP = 28
+
 };
 
 int main() {
@@ -61,6 +68,15 @@ int main() {
     
     return 0;
 
+}
+
+int lookup(char ch) {
+    switch (ch) {
+    case '(':
+        addChar();
+        nextToken = LPAREN;
+
+    }
 }
 
 void addChar() {
@@ -112,6 +128,21 @@ int lex() {
         nextToken = ID;
         break;
 
+    //parses digits
+    case DIGIT:
+        addChar();
+        getChar();
+        while (charClass == DIGIT) {
+            addChar();
+            getChar();
+        }
+        nextToken = NUM;
+        break;
+
+    // for parentheses and operators
+    case UNKNOWN:
+        lookup(nextChar);
+        getChar();
     }
 
 }
