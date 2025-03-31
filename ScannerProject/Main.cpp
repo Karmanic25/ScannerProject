@@ -48,12 +48,20 @@ enum TokenCode {
     COMP = 20,
     TYPE = 21,
     FUNCALL = 22,
+
+    //operatos and other misc
     LPAREN = 23,
     RPAREN = 24,
     ADD_OP = 25,
     SUB_OP = 26,
     MULT_OP = 27,
-    DIV_OP = 28
+    DIV_OP = 28,
+    COMMA = 29,
+    GREATER = 30,
+    LOWER = 31,
+    NOTEQ = 32,
+    COLON = 33,
+    SEMICOLON = 34
 
 };
 
@@ -64,7 +72,13 @@ int main() {
     if (!inputFile.is_open()) {
 		cerr << "Error opening file" << endl;
 		return 1;
-	}
+    }
+    else {
+        getChar();
+        do {
+            lex();
+        } while (nextToken!= EOF);
+    }
     
     return 0;
 
@@ -96,6 +110,18 @@ int lookup(char ch) {
         addChar();
         nextToken = DIV_OP;
         break;
+    case ',':
+        addChar();
+        nextToken = COMMA;
+        break;
+    case ':':
+        addChar();
+        nextToken = COLON;
+        break;
+    case ';':
+        addChar();
+        nextToken = SEMICOLON;
+        break;
     default:
         addChar();
         nextToken = EOF;
@@ -119,14 +145,14 @@ void getChar() {
     if(inputFile.get(nextChar)) {
         if (isalpha(nextChar) || nextChar == '_')  {
 			charClass = LETTER;
-		} else if (isdigit(nextChar)) {
-			charClass = DIGIT;
-		} else {
-			charClass = UNKNOWN;
-		}
-        } else { 
-			charClass = EOF;
-		}
+		    } else if (isdigit(nextChar)) {
+			    charClass = DIGIT;
+		        } else {
+			        charClass = UNKNOWN;
+		        }
+    } else { 
+		charClass = EOF;
+	}
 }
 
 void getNonBlank() {
@@ -164,11 +190,11 @@ int lex() {
         nextToken = NUM;
         break;
 
-    // for parentheses and operators
+    // for parentheses,operators, and other misc
     case UNKNOWN:
         lookup(nextChar);
         getChar();
-
+        break;
     // end of file
     case EOF:
         nextToken = EOF;
