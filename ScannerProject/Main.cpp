@@ -22,7 +22,7 @@ int lex();
 
 //Character Classes
 enum CharacterClass {
-	LETTER = 0,
+    LETTER = 0,
     DIGIT = 1,
     UNKNOWN = 99
 };
@@ -47,12 +47,12 @@ enum TokenCode {
     NUM = 19,
     COMP = 20,
     TYPE = 21,
-    FUNCALL = 22
-    LPAREN = 23
-    RPAREN = 24
-    ADD_OP = 25
-    SUB_OP = 26
-    MULT_OP = 27
+    FUNCALL = 22,
+    LPAREN = 23,
+    RPAREN = 24,
+    ADD_OP = 25,
+    SUB_OP = 26,
+    MULT_OP = 27,
     DIV_OP = 28
 
 };
@@ -60,7 +60,7 @@ enum TokenCode {
 int main() {
     
     //replace the string with the file path of whatever C file to test for comment blocks.
-    inputFile.open("C:\\Users\\jacob\\Desktop\\ScannerProject\\test.txt");
+    inputFile.open("input1.txt");
     if (!inputFile.is_open()) {
 		cerr << "Error opening file" << endl;
 		return 1;
@@ -75,8 +75,33 @@ int lookup(char ch) {
     case '(':
         addChar();
         nextToken = LPAREN;
-
+        break;
+    case ')':
+        addChar();
+        nextToken = RPAREN;
+        break;
+    case '+':
+        addChar();
+        nextToken = ADD_OP;
+        break;
+    case '-':
+        addChar();
+        nextToken = SUB_OP;
+        break;
+    case '*':
+        addChar();
+        nextToken = MULT_OP;
+        break;
+    case '/':
+        addChar();
+        nextToken = DIV_OP;
+        break;
+    default:
+        addChar();
+        nextToken = EOF;
+        break;
     }
+    return nextToken;
 }
 
 void addChar() {
@@ -143,6 +168,16 @@ int lex() {
     case UNKNOWN:
         lookup(nextChar);
         getChar();
-    }
 
+    // end of file
+    case EOF:
+        nextToken = EOF;
+        lexeme[0] = 'E';
+        lexeme[1] = 'O';
+        lexeme[2] = 'F';
+        lexeme[3] = 0;
+        break;
+    }
+    cout << "Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
+    return nextToken;
 }
