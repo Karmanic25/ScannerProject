@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -18,6 +19,8 @@ ifstream inputFile;
 void addChar();
 void getChar();
 void getNonBlank();
+void ParseDecl();
+void ParseProgram();
 int lex();
 
 //Character Classes
@@ -49,7 +52,7 @@ enum TokenCode {
     TYPE = 21,
     FUNCALL = 22,
 
-    //operatos and other misc
+    //operatos
     LPAREN = 23,
     RPAREN = 24,
     ADD_OP = 25,
@@ -62,14 +65,38 @@ enum TokenCode {
     NOTEQ = 32,
     COLON = 33,
     SEMICOLON = 34,
-    EQUALS = 35
+    EQUALS = 35,
+
+    //reserved words
+    BEGIN = 36,
+    IF = 37,
+    THEN = 38,
+    ELSE = 39,
+    WHILE = 40,
+    LOOP = 41,
+    INT = 42,
+    END = 43
+};
+
+map<string, int> reservedwords = {
+    {"program",PROGRAM},
+    {"begin",BEGIN},
+    {"end",END},
+    {"if",IF},
+    {"then",THEN},
+    {"else",ELSE},
+    {"input",INPUT},
+    {"output",OUTPUT},
+    {"int",INT},
+    {"while",WHILE},
+    {"loop",LOOP}
 
 };
 
 int main() {
     
-    //replace the string with the file path of whatever C file to test for comment blocks.
-    inputFile.open("input7.txt");
+    //replace the string with the file path of whatever text file to test for comment blocks.
+    inputFile.open("input1.txt");
     if (!inputFile.is_open()) {
 		cerr << "Error opening file" << endl;
 		return 1;
@@ -196,7 +223,7 @@ int lex() {
     //Starts cases for identifiers
     switch (charClass) {
     //parses Identifiers
-    case LETTER:
+    case LETTER: {
         addChar();
         getChar();
         while (charClass == LETTER || charClass == DIGIT)
@@ -204,9 +231,16 @@ int lex() {
             addChar();
             getChar();
         }
-        nextToken = ID;
+        string lexStr = string(lexeme);
+        auto it = reservedwords.find(lexStr);
+        if (it != reservedwords.end()) {
+            nextToken = it->second;
+        }
+        else {
+            nextToken = ID;
+        }
         break;
-
+    }
     //parses digits
     case DIGIT:
         addChar();
@@ -234,4 +268,53 @@ int lex() {
     }
     cout << "Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
     return nextToken;
+}
+void ParseProgram() {
+    if (nextToken == PROGRAM) {
+        cout << "PROGRAM";
+        lex();
+    }
+    else {
+        cerr << "Expected 'program'";
+    }
+}
+// start of parser. this is the declaration section
+void ParseDeclSec(){
+    cout << "DECL_SEC" << endl;
+    ParseDecl();
+    if (nextToken == ID) {
+        ParseDeclSec();
+    }
+
+}
+
+void ParseDecl() {
+    cout << "DECL" << endl;
+    if (nextToken == COLON) {
+        lex();
+    }else{
+        cerr << "Expected ':' after identifier list";
+
+    }
+
+    if (nextToken == SEMICOLON) {
+        lex();
+    }
+    else {
+        cerr << "Expected ';' after declaration";
+    }
+}
+
+void ParseIDList() {
+    cout << "ID_LIST" << endl;
+    if (nextToken == ID) {
+        lex();
+        if (nextToken == COMMA) {
+            lex();
+            ParseIDList();
+        }
+    }
+    else {
+        cerr << "Expected identifier in declaration";
+    }
 }
