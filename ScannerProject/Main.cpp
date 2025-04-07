@@ -239,7 +239,12 @@ int lex() {
         string lexStr = string(lexeme);
         auto it = reservedwords.find(lexStr);
         if (it != reservedwords.end()) {
-            nextToken = it->second;
+            if (lexStr == "int" || lexStr == "float" || lexStr == "double") {
+                nextToken = TYPE;
+            }
+            else {
+                nextToken = it->second;
+            }
         }
         else {
             nextToken = ID;
@@ -280,10 +285,6 @@ void ParseProgram() {
         lex();
     }
 
-    if (nextToken == ID) {
-        ParseIDList();
-    }
-
     ParseDeclSec();
 
     if (nextToken == BEGIN) {
@@ -298,17 +299,21 @@ void ParseProgram() {
 
 }
 // start of parser. this is the declaration section
-void ParseDeclSec(){
+void ParseDeclSec() {
     cout << "DECL_SEC" << endl;
-    ParseDecl();
-    if (nextToken == ID) {
-        ParseDeclSec();
+    while (nextToken == ID) {
+        ParseDecl();
+        cout << "DECL_SEC" << endl;
     }
-
 }
 
 void ParseDecl() {
     cout << "DECL" << endl;
+
+    if (nextToken == ID) {
+        ParseIDList();
+    }
+
     if (nextToken == COLON) {
         lex();
     }else{
@@ -316,11 +321,20 @@ void ParseDecl() {
 
     }
 
+    if (nextToken == TYPE) {
+        lex();
+    }
+    else {
+        cerr << "Expected a type after ':'" << endl;
+        exit(1);
+    }
+
     if (nextToken == SEMICOLON) {
         lex();
     }
     else {
         cerr << "Expected ';' after declaration";
+        exit(1);
     }
 }
 
