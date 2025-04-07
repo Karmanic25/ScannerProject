@@ -21,6 +21,9 @@ void getChar();
 void getNonBlank();
 void ParseDecl();
 void ParseProgram();
+void ParseIDList();
+void ParseDeclSec();
+
 int lex();
 
 //Character Classes
@@ -101,11 +104,13 @@ int main() {
 		cerr << "Error opening file" << endl;
 		return 1;
     }
-    else {
-        getChar();
-        do {
-            lex();
-        } while (nextToken!= EOF);
+    getChar();
+    lex();
+    ParseProgram();
+
+    if (nextToken != EOF) {
+        cerr << "Unexpected input after end of program.";
+            return 1;
     }
     
     return 0;
@@ -266,17 +271,31 @@ int lex() {
         lexeme[3] = 0;
         break;
     }
-    cout << "Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
+    cout << "\n Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
     return nextToken;
 }
 void ParseProgram() {
     if (nextToken == PROGRAM) {
-        cout << "PROGRAM";
+        cout << "PROGRAM" << endl;
+        lex();
+    }
+
+    if (nextToken == ID) {
+        ParseIDList();
+    }
+
+    ParseDeclSec();
+
+    if (nextToken == BEGIN) {
+        cout << "BEGIN" << endl;
         lex();
     }
     else {
-        cerr << "Expected 'program'";
+        cerr << "Expected 'begin' after declaration section" << endl;
+        exit(1);
     }
+
+
 }
 // start of parser. this is the declaration section
 void ParseDeclSec(){
