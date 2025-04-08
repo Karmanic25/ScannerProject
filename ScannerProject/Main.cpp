@@ -539,3 +539,11 @@ void ParseOutput() {
 void ParseIfStmt() {
 
 }
+
+void ParseWhileStmt() {
+
+}
+
+void ParseComp() {
+
+}
