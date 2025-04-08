@@ -31,6 +31,8 @@ void ParseExpr();
 void ParseOperand();
 void ParseInput();
 void ParseOutput();
+void ParseIfStmt();
+void ParseWhileStmt();
 int lex();
 
 //Character Classes
@@ -532,4 +534,8 @@ void ParseOutput() {
         cerr << "Expected ';' after output statement" << endl;
         exit(1);
     }
+}
+
+void ParseIfStmt() {
+
 }
