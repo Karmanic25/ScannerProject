@@ -23,7 +23,13 @@ void ParseDecl();
 void ParseProgram();
 void ParseIDList();
 void ParseDeclSec();
-
+void ParseStmtSec();
+void ParseSTMT();
+void ParseAssign();
+void ParseFactor();
+void ParseExpr();
+void ParseOperand();
+void ParseInput();
 int lex();
 
 //Character Classes
@@ -70,7 +76,7 @@ enum TokenCode {
     SEMICOLON = 34,
     EQUALS = 35,
 
-    //reserved words
+    //reserved word values set
     BEGIN = 36,
     IF = 37,
     THEN = 38,
@@ -81,6 +87,7 @@ enum TokenCode {
     END = 43
 };
 
+//container of reserved words and the string that it is pointing to
 map<string, int> reservedwords = {
     {"program",PROGRAM},
     {"begin",BEGIN},
@@ -236,6 +243,8 @@ int lex() {
             addChar();
             getChar();
         }
+
+        //checks the string of the current lexeme to see if it matches a reservedword
         string lexStr = string(lexeme);
         auto it = reservedwords.find(lexStr);
         if (it != reservedwords.end()) {
@@ -288,7 +297,6 @@ void ParseProgram() {
     ParseDeclSec();
 
     if (nextToken == BEGIN) {
-        cout << "BEGIN" << endl;
         lex();
     }
     else {
@@ -296,14 +304,15 @@ void ParseProgram() {
         exit(1);
     }
 
+    ParseStmtSec();
+
 
 }
 // start of parser. this is the declaration section
 void ParseDeclSec() {
-    cout << "DECL_SEC" << endl;
     while (nextToken == ID) {
-        ParseDecl();
         cout << "DECL_SEC" << endl;
+        ParseDecl();
     }
 }
 
@@ -349,5 +358,147 @@ void ParseIDList() {
     }
     else {
         cerr << "Expected identifier in declaration";
+    }
+}
+
+void ParseStmtSec() {
+    while (nextToken == ID || nextToken == IF || nextToken == WHILE || nextToken == INPUT || nextToken == OUTPUT) {
+        cout << "STMT_SEC" << endl;
+        ParseSTMT();
+    }
+}
+
+void ParseSTMT() {
+    cout << "STMT" << endl;
+
+    switch (nextToken) {
+    case ID:
+
+        ParseAssign();
+        break;
+
+    case IF:
+
+        //ParseIfStmt();
+        lex();
+        break;
+
+    case WHILE:
+
+        //ParseWhileStmt();
+        lex();
+        break;
+
+    case INPUT:
+
+        ParseInput();
+        break;
+
+    case OUTPUT:
+
+        //ParseOutput();
+        lex();
+        break;
+
+    default:
+        cerr << "Unexpected token in statement" << endl;
+        exit(1);
+
+    }
+
+}
+
+void ParseAssign() {
+    if (nextToken == ID) {
+        lex();
+    }
+    else {
+        cerr << "Expected identifier at beginning of assignment" << endl;
+        exit(1);
+    }
+
+    if (nextToken == ASSIGN) {
+        lex();
+    }
+    else {
+        cerr << "Expected ':=' in assignment" << endl;
+        exit(1);
+    }
+    cout << "ASSIGN" << endl;
+
+    ParseExpr();
+
+    if (nextToken == SEMICOLON) {
+        lex();
+    }
+    else {
+        cerr << "Expected ';' at end of assignment" << endl;
+        exit(1);
+    }
+}
+
+void  ParseExpr() {
+    cout << "EXPR" << endl;
+    ParseFactor();
+
+    while (nextToken == ADD_OP || nextToken == SUB_OP) {
+        lex();
+        ParseFactor();
+    }
+}
+
+void ParseFactor() {
+    cout << "FACTOR" << endl;
+    ParseOperand();
+
+    while (nextToken == MULT_OP || nextToken == DIV_OP) {
+        lex();
+        ParseOperand();
+    }
+}
+
+void ParseOperand() {
+    cout << "OPERAND" << endl;
+
+    if (nextToken == NUM || nextToken == ID) {
+        lex();
+    }
+    else if (nextToken == LPAREN) {
+        lex();
+        ParseExpr();
+
+        if (nextToken == RPAREN) {
+            lex();
+        }
+        else {
+            cerr << "Expected ')' after expression" << endl;
+            exit(1);
+        }
+    }
+    else {
+        cerr << "Expected NUM, ID, or (EXPR) as operand" << endl;
+        exit(1);
+    }
+}
+
+void ParseInput() {
+    cout << "INPUT" << endl;
+
+    lex();
+
+    if (nextToken == ID) {
+        ParseIDList();
+    }
+    else {
+        cerr << "Expected identifier list after 'input'" << endl;
+        exit(1);
+    }
+
+    if (nextToken == SEMICOLON) {
+        lex();
+    }
+    else {
+        cerr << "Expected ';' after input statement" << endl;
+        exit(1);
     }
 }
