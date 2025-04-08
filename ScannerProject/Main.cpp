@@ -15,7 +15,7 @@ int token;
 int nextToken;
 ifstream inputFile;
 
-//Function declarations
+//Function prototypes
 void addChar();
 void getChar();
 void getNonBlank();
@@ -30,6 +30,7 @@ void ParseFactor();
 void ParseExpr();
 void ParseOperand();
 void ParseInput();
+void ParseOutput();
 int lex();
 
 //Character Classes
@@ -160,7 +161,6 @@ int lookup(char ch) {
         if (nextChar == '=') {
             addChar();
             nextToken = ASSIGN;
-            getChar();
         }else {
             nextToken = COLON;
         }
@@ -285,7 +285,7 @@ int lex() {
         lexeme[3] = 0;
         break;
     }
-    cout << "\n Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
+    //cout << "\n Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
     return nextToken;
 }
 void ParseProgram() {
@@ -368,6 +368,7 @@ void ParseStmtSec() {
     }
 }
 
+//Switch case of all the stmt sec requirements
 void ParseSTMT() {
     cout << "STMT" << endl;
 
@@ -396,8 +397,7 @@ void ParseSTMT() {
 
     case OUTPUT:
 
-        //ParseOutput();
-        lex();
+        ParseOutput();
         break;
 
     default:
@@ -408,6 +408,7 @@ void ParseSTMT() {
 
 }
 
+//Parsing section that checks for assignment, then expression, factor, and operands
 void ParseAssign() {
     if (nextToken == ID) {
         lex();
@@ -425,6 +426,8 @@ void ParseAssign() {
         exit(1);
     }
     cout << "ASSIGN" << endl;
+    //cout << "  Debug: about to parse EXPR, nextToken = " << nextToken << ", lexeme = " << lexeme << endl;
+
 
     ParseExpr();
 
@@ -443,6 +446,7 @@ void  ParseExpr() {
 
     while (nextToken == ADD_OP || nextToken == SUB_OP) {
         lex();
+        cout << "EXPR" << endl;
         ParseFactor();
     }
 }
@@ -459,6 +463,8 @@ void ParseFactor() {
 
 void ParseOperand() {
     cout << "OPERAND" << endl;
+    //cout << "  Debug: nextToken = " << nextToken << ", lexeme = " << lexeme << endl;
+
 
     if (nextToken == NUM || nextToken == ID) {
         lex();
@@ -481,9 +487,9 @@ void ParseOperand() {
     }
 }
 
+//Check for input reserved word
 void ParseInput() {
     cout << "INPUT" << endl;
-
     lex();
 
     if (nextToken == ID) {
@@ -499,6 +505,31 @@ void ParseInput() {
     }
     else {
         cerr << "Expected ';' after input statement" << endl;
+        exit(1);
+    }
+}
+
+//Checks for output reserved word
+void ParseOutput() {
+    cout << "OUTPUT" << endl;
+    lex();
+
+    if (nextToken == ID) {
+        ParseIDList();
+    }
+    else if (nextToken == NUM) {
+        lex();
+    }
+    else {
+        cerr << "Expected identifier list or number after 'output'" << endl;
+        exit(1);
+    }
+
+    if (nextToken == SEMICOLON) {
+        lex();
+    }
+    else {
+        cerr << "Expected ';' after output statement" << endl;
         exit(1);
     }
 }
