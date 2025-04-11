@@ -32,6 +32,7 @@ void ParseOperand();
 void ParseInput();
 void ParseOutput();
 void ParseIfStmt();
+void ParseComp();
 void ParseWhileStmt();
 int lex();
 
@@ -109,7 +110,7 @@ map<string, int> reservedwords = {
 int main() {
     
     //replace the string with the file path of whatever text file to test for comment blocks.
-    inputFile.open("input1.txt");
+    inputFile.open("input2.txt");
     if (!inputFile.is_open()) {
 		cerr << "Error opening file" << endl;
 		return 1;
@@ -382,14 +383,12 @@ void ParseSTMT() {
 
     case IF:
 
-        //ParseIfStmt();
-        lex();
+        ParseIfStmt();
         break;
 
     case WHILE:
 
-        //ParseWhileStmt();
-        lex();
+        ParseWhileStmt();
         break;
 
     case INPUT:
@@ -536,14 +535,81 @@ void ParseOutput() {
     }
 }
 
+//parses the if statement
 void ParseIfStmt() {
+    cout << "IF_STMT" << endl;
+    lex();
 
+    ParseComp();
+
+    if (nextToken == THEN) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'then' after comparison in if-statement" << endl;
+        exit(1);
+    }
+
+    ParseStmtSec();
+
+    if (nextToken == ELSE) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'else' in if-statement" << endl;
+        exit(1);
+    }
+
+    ParseStmtSec();
+
+    if (nextToken == SEMICOLON) {
+        lex(); // consume ';'
+    }
+    else {
+        cerr << "Expected ';' after if-statement" << endl;
+        exit(1);
+    }
 }
 
 void ParseWhileStmt() {
+    cout << "WHILE" << endl;
+    lex();
 
+    ParseComp();
+
+    if (nextToken == LOOP) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'loop' in while-statement" << endl;
+        exit(1);
+    }
+
+    ParseStmtSec();
+
+    if (nextToken == SEMICOLON) {
+        lex(); // consume ';'
+    }
+    else {
+        cerr << "Expected ';' after if-statement" << endl;
+        exit(1);
+    }
 }
 
-void ParseComp() {
 
+//parses the comp logic
+void ParseComp() {
+    cout << "COMP" << endl;
+
+    ParseOperand();
+
+    if (nextToken == GREATER || nextToken == LOWER || nextToken == NOTEQ || nextToken == EQUALS) {
+        lex();
+    }
+    else {
+        cerr << "Expected comparison operator in condition" << endl;
+        exit(1);
+    }
+
+    ParseOperand();
 }
