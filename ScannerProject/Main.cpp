@@ -458,9 +458,11 @@ void ParseFactor() {
 
     while (nextToken == MULT_OP || nextToken == DIV_OP) {
         lex();
+        cout << "FACTOR" << endl;
         ParseOperand();
     }
 }
+
 
 void ParseOperand() {
     cout << "OPERAND" << endl;
@@ -540,13 +542,31 @@ void ParseIfStmt() {
     cout << "IF_STMT" << endl;
     lex();
 
+    // Expect '(' before COMP
+    if (nextToken == LPAREN) {
+        lex();
+    }
+    else {
+        cerr << "Expected '(' before condition in if-statement" << endl;
+        exit(1);
+    }
+
     ParseComp();
+
+    // Expect ')' after COMP
+    if (nextToken == RPAREN) {
+        lex();
+    }
+    else {
+        cerr << "Expected ')' after condition in if-statement" << endl;
+        exit(1);
+    }
 
     if (nextToken == THEN) {
         lex();
     }
     else {
-        cerr << "Expected 'then' after comparison in if-statement" << endl;
+        cerr << "Expected 'then' after condition in if-statement" << endl;
         exit(1);
     }
 
@@ -563,7 +583,7 @@ void ParseIfStmt() {
     ParseStmtSec();
 
     if (nextToken == SEMICOLON) {
-        lex(); // consume ';'
+        lex();
     }
     else {
         cerr << "Expected ';' after if-statement" << endl;
@@ -571,11 +591,29 @@ void ParseIfStmt() {
     }
 }
 
+
+//while statement parsing
 void ParseWhileStmt() {
-    cout << "WHILE" << endl;
+    cout << "WHILE_STMT" << endl;
     lex();
 
+    if (nextToken == LPAREN) {
+        lex();
+    }
+    else {
+        cerr << "Expected '(' before condition in while-statement" << endl;
+        exit(1);
+    }
+
     ParseComp();
+
+    if (nextToken == RPAREN) {
+        lex();
+    }
+    else {
+        cerr << "Expected ')' before condition in while-statement" << endl;
+        exit(1);
+    }
 
     if (nextToken == LOOP) {
         lex();
@@ -587,11 +625,27 @@ void ParseWhileStmt() {
 
     ParseStmtSec();
 
+    if (nextToken == END) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'end' in while _statement" << endl;
+        exit(1);
+    }
+
+    if (nextToken == LOOP) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'while' after 'end' in while-statement" << endl;
+        exit(1);
+    }
+
     if (nextToken == SEMICOLON) {
         lex(); // consume ';'
     }
     else {
-        cerr << "Expected ';' after if-statement" << endl;
+        cerr << "Expected ';' after while-statement" << endl;
         exit(1);
     }
 }
