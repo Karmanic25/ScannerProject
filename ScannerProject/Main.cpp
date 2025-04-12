@@ -112,7 +112,7 @@ map<string, int> reservedwords = {
 int main() {
 
     //replace the string with the file path of whatever text file to test for comment blocks.
-    inputFile.open("input7.txt");
+    inputFile.open("input1.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
@@ -122,7 +122,7 @@ int main() {
     ParseProgram();
 
     if (nextToken != EOF) {
-        cerr << "Unexpected input after end of program.";
+        cerr << "Unexpected input after end of program." << endl;
         return 1;
     }
 
@@ -317,8 +317,24 @@ void ParseProgram() {
 
     ParseStmtSec();
 
+    if (nextToken == END) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'end' at end of program" << endl;
+        exit(1);
+    }
 
+    if (nextToken == SEMICOLON) {
+        lex();
+    }
+    else {
+        cerr << "Expected ';' after 'end' at end of program" << endl;
+        exit(1);
+    }
 }
+
+
 // start of parser. this is the declaration section
 void ParseDeclSec() {
     while (nextToken == ID) {
