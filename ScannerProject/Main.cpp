@@ -38,7 +38,7 @@ void ParseFuncCall();
 int lex();
 
 //tracks line number of file
-int lineNum = 1;
+int lineNum = 0;
 
 //Character Classes
 enum CharacterClass {
@@ -115,7 +115,7 @@ map<string, int> reservedwords = {
 int main() {
 
     //replace the string with the file path of whatever text file to test for comment blocks.
-    inputFile.open("input1.txt");
+    inputFile.open("input4.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
@@ -325,7 +325,7 @@ void ParseProgram() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum <<  ": Expected 'end' at end of program" << endl;
+        cerr << "Line " << lineNum <<  ": Expected 'end' at end of program" << endl;
         exit(1);
     }
 
@@ -333,7 +333,7 @@ void ParseProgram() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after 'end' at end of program" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after 'end' at end of program" << endl;
         exit(1);
     }
 }
@@ -358,7 +358,7 @@ void ParseDecl() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ':' after identifier list" << endl;
+        cerr << "Line " << lineNum << ": Expected ':' after identifier list" << endl;
 
     }
 
@@ -366,7 +366,7 @@ void ParseDecl() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected a type after ':'" << endl;
+        cerr << "Line " << lineNum << ": Expected a type after ':'" << endl;
         exit(1);
     }
 
@@ -374,7 +374,7 @@ void ParseDecl() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after declaration" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after declaration" << endl;
         exit(1);
     }
 }
@@ -389,7 +389,7 @@ void ParseIDList() {
         }
     }
     else {
-        cerr << "Line" << lineNum << ": Expected identifier in declaration" << endl;
+        cerr << "Line " << lineNum << ": Expected identifier in declaration" << endl;
     }
 }
 
@@ -435,7 +435,7 @@ void ParseSTMT() {
         break;
 
     default:
-        cerr << "Line" << lineNum << ": Unexpected token in statement" << endl;
+        cerr << "Line " << lineNum << ": Unexpected token in statement" << endl;
         exit(1);
 
     }
@@ -448,7 +448,7 @@ void ParseAssign() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected identifier at beginning of assignment" << endl;
+        cerr << "Line " << lineNum << ": Expected identifier at beginning of assignment" << endl;
         exit(1);
     }
 
@@ -456,7 +456,7 @@ void ParseAssign() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ':=' in assignment" << endl;
+        cerr << "Line " << lineNum << ": Expected ':=' in assignment" << endl;
         exit(1);
     }
     cout << "ASSIGN" << endl;
@@ -469,7 +469,7 @@ void ParseAssign() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' at end of assignment" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' at end of assignment" << endl;
         exit(1);
     }
 }
@@ -510,7 +510,7 @@ void ParseOperand() {
             lex();
         }
         else {
-            cerr << "Line" << lineNum << ": Expected ')' after expression" << endl;
+            cerr << "Line " << lineNum << ": Expected ')' after expression" << endl;
             exit(1);
         }
     }
@@ -518,7 +518,7 @@ void ParseOperand() {
         ParseFuncCall();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected NUM, ID, (EXPR), or FUNCALL as operand" << endl;
+        cerr << "Line " << lineNum << ": Expected NUM, ID, (EXPR), or FUNCALL as operand" << endl;
         exit(1);
     }
 }
@@ -533,7 +533,7 @@ void ParseInput() {
         ParseIDList();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected identifier list after 'input'" << endl;
+        cerr << "Line " << lineNum << ": Expected identifier list after 'input'" << endl;
         exit(1);
     }
 
@@ -541,7 +541,7 @@ void ParseInput() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after input statement" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after input statement" << endl;
         exit(1);
     }
 }
@@ -558,7 +558,7 @@ void ParseOutput() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected identifier list or number after 'output'" << endl;
+        cerr << "Line " << lineNum << ": Expected identifier list or number after 'output'" << endl;
         exit(1);
     }
 
@@ -566,7 +566,7 @@ void ParseOutput() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after output statement" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after output statement" << endl;
         exit(1);
     }
 }
@@ -580,7 +580,7 @@ void ParseIfStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected '(' before condition in if-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected '(' before condition in if-statement" << endl;
         exit(1);
     }
 
@@ -590,7 +590,7 @@ void ParseIfStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ')' after condition in if-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected ')' after condition in if-statement" << endl;
         exit(1);
     }
 
@@ -598,7 +598,7 @@ void ParseIfStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected 'then' after condition in if-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected 'then' after condition in if-statement" << endl;
         exit(1);
     }
 
@@ -613,7 +613,7 @@ void ParseIfStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected 'end' in if-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected 'end' in if-statement" << endl;
         exit(1);
     }
 
@@ -621,7 +621,7 @@ void ParseIfStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected 'if' after 'end' in if-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected 'if' after 'end' in if-statement" << endl;
         exit(1);
     }
 
@@ -629,7 +629,7 @@ void ParseIfStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after if-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after if-statement" << endl;
         exit(1);
     }
 }
@@ -645,7 +645,7 @@ void ParseWhileStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected '(' before condition in while-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected '(' before condition in while-statement" << endl;
         exit(1);
     }
 
@@ -655,7 +655,7 @@ void ParseWhileStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ')' before condition in while-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected ')' before condition in while-statement" << endl;
         exit(1);
     }
 
@@ -663,7 +663,7 @@ void ParseWhileStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected 'loop' in while-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected 'loop' in while-statement" << endl;
         exit(1);
     }
 
@@ -673,7 +673,7 @@ void ParseWhileStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected 'end' in while _statement" << endl;
+        cerr << "Line " << lineNum << ": Expected 'end' in while _statement" << endl;
         exit(1);
     }
 
@@ -681,7 +681,7 @@ void ParseWhileStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected 'while' after 'end' in while-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected 'while' after 'end' in while-statement" << endl;
         exit(1);
     }
 
@@ -689,7 +689,7 @@ void ParseWhileStmt() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after while-statement" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after while-statement" << endl;
         exit(1);
     }
 }
@@ -705,7 +705,7 @@ void ParseComp() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected comparison operator in condition" << endl;
+        cerr << "Line " << lineNum << ": Expected comparison operator in condition" << endl;
         exit(1);
     }
 
@@ -721,7 +721,7 @@ void ParseFuncCall() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected identifier (function name) after 'call'" << endl;
+        cerr << "Line " << lineNum << ": Expected identifier (function name) after 'call'" << endl;
         exit(1);
     }
 
@@ -729,7 +729,7 @@ void ParseFuncCall() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected '(' after function name" << endl;
+        cerr << "Line " << lineNum << ": Expected '(' after function name" << endl;
         exit(1);
     }
 
@@ -739,7 +739,7 @@ void ParseFuncCall() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ":Expected ')' after ID_LIST in function call" << endl;
+        cerr << "Line " << lineNum << ":Expected ')' after ID_LIST in function call" << endl;
         exit(1);
     }
 
@@ -747,7 +747,7 @@ void ParseFuncCall() {
         lex();
     }
     else {
-        cerr << "Line" << lineNum << ": Expected ';' after function call" << endl;
+        cerr << "Line " << lineNum << ": Expected ';' after function call" << endl;
         exit(1);
     }
 }
