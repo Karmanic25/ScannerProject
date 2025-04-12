@@ -112,10 +112,14 @@ map<string, int> reservedwords = {
 
 };
 
+
+////////////////////////////////////////
+//main: here you can change the input file number between 1-7.
+//can add more input files as needed to test
 int main() {
 
-    //replace the string with the file path of whatever text file to test for comment blocks.
-    inputFile.open("input4.txt");
+    //replace the string with the file path of whatever text file to test, or if all files are in folder then just the file name
+    inputFile.open("input5.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
@@ -133,6 +137,9 @@ int main() {
 
 }
 
+
+////////////////////////////////////////////
+//looks unknown characters and tokens them appropriately
 int lookup(char ch) {
     switch (ch) {
     case '(':
