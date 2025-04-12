@@ -34,6 +34,7 @@ void ParseOutput();
 void ParseIfStmt();
 void ParseComp();
 void ParseWhileStmt();
+void ParseFuncCall();
 int lex();
 
 //Character Classes
@@ -103,17 +104,18 @@ map<string, int> reservedwords = {
     {"output",OUTPUT},
     {"int",INT},
     {"while",WHILE},
-    {"loop",LOOP}
+    {"loop",LOOP},
+    {"call", FUNCALL}
 
 };
 
 int main() {
-    
+
     //replace the string with the file path of whatever text file to test for comment blocks.
-    inputFile.open("input2.txt");
+    inputFile.open("input7.txt");
     if (!inputFile.is_open()) {
-		cerr << "Error opening file" << endl;
-		return 1;
+        cerr << "Error opening file" << endl;
+        return 1;
     }
     getChar();
     lex();
@@ -121,9 +123,9 @@ int main() {
 
     if (nextToken != EOF) {
         cerr << "Unexpected input after end of program.";
-            return 1;
+        return 1;
     }
-    
+
     return 0;
 
 }
@@ -164,7 +166,8 @@ int lookup(char ch) {
         if (nextChar == '=') {
             addChar();
             nextToken = ASSIGN;
-        }else {
+        }
+        else {
             nextToken = COLON;
         }
         break;
@@ -203,26 +206,30 @@ int lookup(char ch) {
 void addChar() {
     //Check if lexeme is within bounds
     if (lexLen <= 98) {
-		lexeme[lexLen++] = nextChar;
-		lexeme[lexLen] = 0;
-	} else {
-		cout << "Error - lexeme is too long \n";
-	}
+        lexeme[lexLen++] = nextChar;
+        lexeme[lexLen] = 0;
+    }
+    else {
+        cout << "Error - lexeme is too long \n";
+    }
 }
 
 void getChar() {
     //Get the next character from the input file
-    if(inputFile.get(nextChar)) {
-        if (isalpha(nextChar) || nextChar == '_')  {
-			charClass = LETTER;
-		    } else if (isdigit(nextChar)) {
-			    charClass = DIGIT;
-		        } else {
-			        charClass = UNKNOWN;
-		        }
-    } else { 
-		charClass = EOF;
-	}
+    if (inputFile.get(nextChar)) {
+        if (isalpha(nextChar) || nextChar == '_') {
+            charClass = LETTER;
+        }
+        else if (isdigit(nextChar)) {
+            charClass = DIGIT;
+        }
+        else {
+            charClass = UNKNOWN;
+        }
+    }
+    else {
+        charClass = EOF;
+    }
 }
 
 void getNonBlank() {
@@ -237,7 +244,7 @@ int lex() {
 
     //Starts cases for identifiers
     switch (charClass) {
-    //parses Identifiers
+        //parses Identifiers
     case LETTER: {
         addChar();
         getChar();
@@ -263,7 +270,7 @@ int lex() {
         }
         break;
     }
-    //parses digits
+               //parses digits
     case DIGIT:
         addChar();
         getChar();
@@ -274,12 +281,12 @@ int lex() {
         nextToken = NUM;
         break;
 
-    // for parentheses,operators, and other misc
+        // for parentheses,operators, and other misc
     case UNKNOWN:
         lookup(nextChar);
         getChar();
         break;
-    // end of file
+        // end of file
     case EOF:
         nextToken = EOF;
         lexeme[0] = 'E';
@@ -288,7 +295,8 @@ int lex() {
         lexeme[3] = 0;
         break;
     }
-    //cout << "\n Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
+    // This was mostly for debugging
+    // cout << "\n Next token is: " << nextToken << ", Next lexeme is: " << lexeme << endl;
     return nextToken;
 }
 void ParseProgram() {
@@ -328,7 +336,8 @@ void ParseDecl() {
 
     if (nextToken == COLON) {
         lex();
-    }else{
+    }
+    else {
         cerr << "Expected ':' after identifier list";
 
     }
@@ -365,7 +374,7 @@ void ParseIDList() {
 }
 
 void ParseStmtSec() {
-    while (nextToken == ID || nextToken == IF || nextToken == WHILE || nextToken == INPUT || nextToken == OUTPUT) {
+    while (nextToken == ID || nextToken == IF || nextToken == WHILE || nextToken == INPUT || nextToken == OUTPUT || nextToken == FUNCALL) {
         cout << "STMT_SEC" << endl;
         ParseSTMT();
     }
@@ -399,6 +408,10 @@ void ParseSTMT() {
     case OUTPUT:
 
         ParseOutput();
+        break;
+
+    case FUNCALL:
+        ParseFuncCall();
         break;
 
     default:
@@ -463,11 +476,9 @@ void ParseFactor() {
     }
 }
 
-
+//checks for operands
 void ParseOperand() {
     cout << "OPERAND" << endl;
-    //cout << "  Debug: nextToken = " << nextToken << ", lexeme = " << lexeme << endl;
-
 
     if (nextToken == NUM || nextToken == ID) {
         lex();
@@ -475,7 +486,6 @@ void ParseOperand() {
     else if (nextToken == LPAREN) {
         lex();
         ParseExpr();
-
         if (nextToken == RPAREN) {
             lex();
         }
@@ -484,11 +494,15 @@ void ParseOperand() {
             exit(1);
         }
     }
+    else if (nextToken == FUNCALL) {
+        ParseFuncCall();
+    }
     else {
-        cerr << "Expected NUM, ID, or (EXPR) as operand" << endl;
+        cerr << "Expected NUM, ID, (EXPR), or FUNCALL as operand" << endl;
         exit(1);
     }
 }
+
 
 //Check for input reserved word
 void ParseInput() {
@@ -542,7 +556,6 @@ void ParseIfStmt() {
     cout << "IF_STMT" << endl;
     lex();
 
-    // Expect '(' before COMP
     if (nextToken == LPAREN) {
         lex();
     }
@@ -553,7 +566,6 @@ void ParseIfStmt() {
 
     ParseComp();
 
-    // Expect ')' after COMP
     if (nextToken == RPAREN) {
         lex();
     }
@@ -574,13 +586,24 @@ void ParseIfStmt() {
 
     if (nextToken == ELSE) {
         lex();
+        ParseStmtSec();
+    }
+
+    if (nextToken == END) {
+        lex();
     }
     else {
-        cerr << "Expected 'else' in if-statement" << endl;
+        cerr << "Expected 'end' in if-statement" << endl;
         exit(1);
     }
 
-    ParseStmtSec();
+    if (nextToken == IF) {
+        lex();
+    }
+    else {
+        cerr << "Expected 'if' after 'end' in if-statement" << endl;
+        exit(1);
+    }
 
     if (nextToken == SEMICOLON) {
         lex();
@@ -590,6 +613,7 @@ void ParseIfStmt() {
         exit(1);
     }
 }
+
 
 
 //while statement parsing
@@ -666,4 +690,44 @@ void ParseComp() {
     }
 
     ParseOperand();
+}
+
+void ParseFuncCall() {
+    cout << "FUNCALL" << endl;
+
+    lex();
+
+    if (nextToken == ID) {
+        lex();
+    }
+    else {
+        cerr << "Expected identifier (function name) after 'call'" << endl;
+        exit(1);
+    }
+
+    if (nextToken == LPAREN) {
+        lex();
+    }
+    else {
+        cerr << "Expected '(' after function name" << endl;
+        exit(1);
+    }
+
+    ParseIDList();
+
+    if (nextToken == RPAREN) {
+        lex();
+    }
+    else {
+        cerr << "Expected ')' after ID_LIST in function call" << endl;
+        exit(1);
+    }
+
+    if (nextToken == SEMICOLON) {
+        lex();
+    }
+    else {
+        cerr << "Expected ';' after function call" << endl;
+        exit(1);
+    }
 }
