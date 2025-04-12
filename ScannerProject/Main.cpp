@@ -112,8 +112,11 @@ map<string, int> reservedwords = {
 
 };
 
+//might use. not sure
+//map<string, int> symbolTable;
 
-////////////////////////////////////////
+////////////////////////////////////////////
+////////////////////////////////////////////
 //main: here you can change the input file number between 1-7.
 //can add more input files as needed to test
 int main() {
@@ -136,9 +139,10 @@ int main() {
     return 0;
 
 }
-
-
 ////////////////////////////////////////////
+////////////////////////////////////////////
+////////////////////////////////////////////
+
 //looks unknown characters and tokens them appropriately
 int lookup(char ch) {
     switch (ch) {
@@ -332,7 +336,7 @@ void ParseProgram() {
         lex();
     }
     else {
-        cerr << "Line " << lineNum <<  ": Expected 'end' at end of program" << endl;
+        cerr << "Line " << lineNum << ": Expected 'end' at end of program" << endl;
         exit(1);
     }
 
