@@ -112,8 +112,9 @@ map<string, int> reservedwords = {
 
 };
 
-//might use. not sure
-//map<string, int> symbolTable;
+//container for symbols and setting declaration to false
+map<string, int> symbolTable;
+bool isDeclaration = false;
 
 ////////////////////////////////////////////
 ////////////////////////////////////////////
@@ -122,7 +123,7 @@ map<string, int> reservedwords = {
 int main() {
 
     //replace the string with the file path of whatever text file to test, or if all files are in folder then just the file name
-    inputFile.open("input3.txt");
+    inputFile.open("input6.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
@@ -285,7 +286,7 @@ int lex() {
         }
         break;
     }
-               //parses digits
+        //parses digits
     case DIGIT:
         addChar();
         getChar();
@@ -362,7 +363,11 @@ void ParseDecl() {
     cout << "DECL" << endl;
 
     if (nextToken == ID) {
+
+        // Set the flag for declaration
+        isDeclaration = true;
         ParseIDList();
+        isDeclaration = false;
     }
 
     if (nextToken == COLON) {
@@ -393,6 +398,23 @@ void ParseDecl() {
 void ParseIDList() {
     cout << "ID_LIST" << endl;
     if (nextToken == ID) {
+        // Copy the current lexeme into a string.
+        string id(lexeme);
+        if (isDeclaration) {
+            if (symbolTable.find(id) != symbolTable.end()) {
+                cerr << "Line " << (lineNum + 1) << ": Error! Identifier "
+                    << id << " redeclared" << endl;
+                exit(1);
+            }
+            symbolTable[id] = 1;
+        }
+        else {
+            if (symbolTable.find(id) == symbolTable.end()) {
+                cerr << "Error! identifier " << id
+                    << " not declared in Line " << (lineNum + 1) << "." << endl;
+                exit(1);
+            }
+        }
         lex();
         if (nextToken == COMMA) {
             lex();
@@ -400,9 +422,11 @@ void ParseIDList() {
         }
     }
     else {
-        cerr << "Line " << lineNum << ": Expected identifier in declaration" << endl;
+        cerr << "Line " << lineNum << ": Expected identifier" << endl;
+        exit(1);
     }
 }
+
 
 void ParseStmtSec() {
     while (nextToken == ID || nextToken == IF || nextToken == WHILE || nextToken == INPUT || nextToken == OUTPUT || nextToken == FUNCALL) {
@@ -512,6 +536,15 @@ void ParseOperand() {
     cout << "OPERAND" << endl;
 
     if (nextToken == NUM || nextToken == ID) {
+        if (nextToken == ID) {
+            // Copy the current lexeme before consuming the token
+            string id(lexeme);
+            // Check if the identifier has been declared
+            if (symbolTable.find(id) == symbolTable.end()) {
+                cerr << "Error! identifier not declared in Line " << (lineNum + 1) << "." << endl;
+                exit(1);
+            }
+        }
         lex();
     }
     else if (nextToken == LPAREN) {
@@ -533,7 +566,6 @@ void ParseOperand() {
         exit(1);
     }
 }
-
 
 //Check for input reserved word
 void ParseInput() {
