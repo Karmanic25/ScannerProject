@@ -119,7 +119,7 @@ map<string, int> reservedwords = {
 int main() {
 
     //replace the string with the file path of whatever text file to test, or if all files are in folder then just the file name
-    inputFile.open("input5.txt");
+    inputFile.open("input3.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
