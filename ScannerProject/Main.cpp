@@ -123,7 +123,7 @@ bool isDeclaration = false;
 int main() {
 
     //replace the string with the file path of whatever text file to test, or if all files are in folder then just the file name
-    inputFile.open("input6.txt");
+    inputFile.open("input1.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
@@ -144,7 +144,7 @@ int main() {
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 
-//looks unknown characters and tokens them appropriately
+//looks for unknown characters and tokens them appropriately
 int lookup(char ch) {
     switch (ch) {
     case '(':
