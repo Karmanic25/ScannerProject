@@ -123,7 +123,7 @@ bool isDeclaration = false;
 int main() {
 
     //replace the string with the file path of whatever text file to test, or if all files are in folder then just the file name
-    inputFile.open("input6.txt");
+    inputFile.open("input7.txt");
     if (!inputFile.is_open()) {
         cerr << "Error opening file" << endl;
         return 1;
